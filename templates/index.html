@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>リアルタイム音声認識</title>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+</head>
+<body>
+    <h1>リアルタイム音声認識</h1>
+    <ul id="text-list"></ul>
+
+    <!-- 停止ボタン -->
+    <button id="stop-button">音声認識を停止</button>
+
+    <script>
+        const socket = io.connect('http://127.0.0.1:5000');
+
+        // 新しいテキストを受信したらリストに追加
+        socket.on('new_text', function (text) {
+            const list = document.getElementById('text-list');
+            const listItem = document.createElement('li');
+            listItem.textContent = text;
+            list.appendChild(listItem);
+        });
+
+        // 停止ボタンがクリックされたとき
+        document.getElementById('stop-button').addEventListener('click', function () {
+            fetch('/stop', {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert("音声認識を停止しました。");
+            });
+        });
+    </script>
+</body>
+</html>
