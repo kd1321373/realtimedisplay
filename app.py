@@ -1,6 +1,6 @@
-import speech_recognition as sr
-from flask import Flask, render_template, jsonify
-from flask_socketio import SocketIO
+import speech_recognition as sr # type: ignore
+from flask import Flask, render_template, jsonify # type: ignore
+from flask_socketio import SocketIO # type: ignore
 import threading
 import os
 import signal
