@@ -1,6 +1,6 @@
-import speech_recognition as sr # type: ignore
-from flask import Flask, render_template, jsonify # type: ignore
-from flask_socketio import SocketIO # type: ignore
+import speech_recognition as sr  # type: ignore
+from flask import Flask, render_template, jsonify  # type: ignore
+from flask_socketio import SocketIO  # type: ignore
 import threading
 import os
 import signal
@@ -10,6 +10,11 @@ socketio = SocketIO(app)
 recognizer = sr.Recognizer()
 
 is_running = True  # 音声認識の実行フラグ
+
+def process_text(text):
+    """取得したテキストを単語リストに変換"""
+    words = text.split()  # スペースで分割
+    return words
 
 def capture_audio():
     """マイクから定期的に音声を取得してテキストに変換する関数"""
@@ -21,7 +26,9 @@ def capture_audio():
                 audio = recognizer.listen(source, timeout=5, phrase_time_limit=5)
                 text = recognizer.recognize_google(audio, language="ja-JP")
                 print(f"Recognized: {text}")
-                socketio.emit('new_text', text)
+                words = process_text(text)
+                print(f"Processed Words: {words}")
+                socketio.emit('new_text', words)  # 単語リストを送信
             except sr.UnknownValueError:
                 print("Could not understand audio.")
             except sr.RequestError as e:

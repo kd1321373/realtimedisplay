@@ -16,12 +16,15 @@
     <script>
         const socket = io.connect('http://127.0.0.1:5000');
 
-        // 新しいテキストを受信したらリストに追加
-        socket.on('new_text', function (text) {
+        // 新しい単語リストを受信したら既存のリストに追加
+        socket.on('new_text', function (words) {
             const list = document.getElementById('text-list');
-            const listItem = document.createElement('li');
-            listItem.textContent = text;
-            list.appendChild(listItem);
+            // 単語ごとにリスト項目を作成し追加
+            words.forEach(word => {
+                const listItem = document.createElement('li');
+                listItem.textContent = word;
+                list.appendChild(listItem);
+            });
         });
 
         // 停止ボタンがクリックされたとき
@@ -32,6 +35,10 @@
             .then(response => response.json())
             .then(data => {
                 alert("音声認識を停止しました。");
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert("サーバーが停止しました。");
             });
         });
     </script>
