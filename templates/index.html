@@ -16,8 +16,14 @@
     <script>
         const socket = io.connect('http://127.0.0.1:5000');
 
+        // WebSocket接続の成功時にコンソールにメッセージを表示
+        socket.on('connect', function() {
+            console.log('WebSocket 接続成功');
+        });
+
         // 新しい単語リストを受信したら既存のリストに追加
         socket.on('new_text', function (words) {
+            console.log('新しい単語:', words);  // デバッグ用
             const list = document.getElementById('text-list');
             // 単語ごとにリスト項目を作成し追加
             words.forEach(word => {
