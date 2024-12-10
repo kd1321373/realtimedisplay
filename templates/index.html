@@ -5,10 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>リアルタイム音声認識</title>
     <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <style>
+        #display-area {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            height: 400px;
+            overflow: auto;
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+    </style>
 </head>
 <body>
     <h1>リアルタイム音声認識</h1>
     <ul id="text-list"></ul>
+
+    <!-- 表示エリア -->
+    <div id="display-area">ここに単語の情報が表示されます。</div>
 
     <!-- 停止ボタン -->
     <button id="stop-button">音声認識を停止</button>
@@ -28,7 +45,15 @@
             // 単語ごとにリスト項目を作成し追加
             words.forEach(word => {
                 const listItem = document.createElement('li');
+
+                // 単語をクリックしたらWikipediaを表示
                 listItem.textContent = word;
+                listItem.style.cursor = "pointer";
+                listItem.addEventListener('click', function () {
+                    const displayArea = document.getElementById('display-area');
+                    displayArea.innerHTML = `<iframe src="https://ja.wikipedia.org/wiki/${encodeURIComponent(word)}"></iframe>`;
+                });
+
                 list.appendChild(listItem);
             });
         });
