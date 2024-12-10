@@ -33,6 +33,8 @@
             list-style: none;
             padding: 0;
             margin: 1em 0;
+            max-height: 400px;
+            overflow-y: auto;
         }
         ul li {
             background: #fff;
@@ -104,6 +106,9 @@
             console.log('新しい単語:', words);  // デバッグ用
             const list = document.getElementById('text-list');
 
+            // 現在のスクロール位置を保存
+            const atTop = list.scrollTop === 0;
+
             words.forEach(word => {
                 const listItem = document.createElement('li');
                 listItem.textContent = word;
@@ -124,8 +129,14 @@
                     }
                 });
 
-                list.appendChild(listItem);
+                // リストの最上部に追加
+                list.insertBefore(listItem, list.firstChild);
             });
+
+            // スクロール位置を調整
+            if (atTop) {
+                list.scrollTop = 0;
+            }
         });
 
         // 停止ボタンの動作
