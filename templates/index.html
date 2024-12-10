@@ -6,35 +6,98 @@
     <title>リアルタイム音声認識</title>
     <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 1em 0;
+            text-align: center;
+        }
+        main {
+            padding: 1em;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            font-size: 1.8em;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 1em 0;
+        }
+        ul li {
+            background: #fff;
+            margin: 0.5em 0;
+            padding: 0.5em 1em;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        ul li:hover {
+            background-color: #f1f1f1;
+        }
         #display-area {
-            margin-top: 20px;
-            padding: 10px;
-            border: 1px solid #ccc;
+            margin-top: 2em;
+            padding: 1em;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
             height: 400px;
             overflow: auto;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
         iframe {
             width: 100%;
             height: 100%;
             border: none;
         }
+        button {
+            display: block;
+            margin: 2em auto 0;
+            padding: 0.8em 2em;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
     </style>
 </head>
 <body>
-    <h1>リアルタイム音声認識</h1>
-    <ul id="text-list"></ul>
-
-    <!-- 表示エリア -->
-    <div id="display-area">ここに単語の情報が表示されます。</div>
-
-    <!-- 停止ボタン -->
-    <button id="stop-button">音声認識を停止</button>
+    <header>
+        <h1>リアルタイム音声認識</h1>
+    </header>
+    <main>
+        <section>
+            <h2>認識された単語</h2>
+            <ul id="text-list"></ul>
+        </section>
+        <section id="display-area">
+            <p>ここに単語の情報が表示されます。</p>
+        </section>
+        <button id="stop-button">音声認識を停止</button>
+    </main>
 
     <script>
         const socket = io.connect('http://127.0.0.1:5000');
 
-        // WebSocket接続の成功時にコンソールにメッセージを表示
-        socket.on('connect', function() {
+        // WebSocket接続の成功時にメッセージを表示
+        socket.on('connect', function () {
             console.log('WebSocket 接続成功');
         });
 
@@ -42,13 +105,11 @@
         socket.on('new_text', function (words) {
             console.log('新しい単語:', words);  // デバッグ用
             const list = document.getElementById('text-list');
-            // 単語ごとにリスト項目を作成し追加
             words.forEach(word => {
                 const listItem = document.createElement('li');
-
-                // 単語をクリックしたらWikipediaを表示
                 listItem.textContent = word;
-                listItem.style.cursor = "pointer";
+
+                // クリック時にWikipediaを表示
                 listItem.addEventListener('click', function () {
                     const displayArea = document.getElementById('display-area');
                     displayArea.innerHTML = `<iframe src="https://ja.wikipedia.org/wiki/${encodeURIComponent(word)}"></iframe>`;
@@ -58,7 +119,7 @@
             });
         });
 
-        // 停止ボタンがクリックされたとき
+        // 停止ボタンの動作
         document.getElementById('stop-button').addEventListener('click', function () {
             fetch('/stop', {
                 method: 'POST'
