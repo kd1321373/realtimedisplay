@@ -1,3 +1,4 @@
+import os
 import sounddevice as sd  # type: ignore
 import numpy as np  # type: ignore
 import queue
@@ -80,6 +81,13 @@ def start_audio_stream():
 @app.route('/')
 def index():
     return render_template('index.html')
+
+# 停止用のルートを追加
+@app.route('/stop', methods=['POST'])
+def stop_server():
+    """サーバーを停止させる"""
+    print("サーバー停止要求を受け取りました...")
+    os._exit(0)  # サーバーを終了
 
 # サーバー起動
 if __name__ == '__main__':
