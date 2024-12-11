@@ -48,33 +48,19 @@
         ul li:hover {
             background-color: #f1f1f1;
         }
-        .search-result {
-            margin-top: 1em;
-            padding: 1em;
-            background-color: #f1f1f1;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            display: none;
-        }
-        iframe {
-            width: 100%;
-            height: 400px;
-            border: none;
-        }
         button {
             display: block;
-            margin: 2em auto 0;
+            margin: 2em auto;
             padding: 0.8em 2em;
-            background-color: #4CAF50;
+            background-color: #f44336;
             color: white;
             border: none;
             border-radius: 4px;
             font-size: 1em;
             cursor: pointer;
-            transition: background-color 0.3s;
         }
         button:hover {
-            background-color: #45a049;
+            background-color: #d32f2f;
         }
     </style>
 </head>
@@ -87,70 +73,37 @@
             <h2>認識された単語</h2>
             <ul id="text-list"></ul>
         </section>
-        <section id="display-area">
-            <p>ここの上に単語の情報が表示されます。</p>
-        </section>
-        <button id="stop-button">音声認識を停止</button>
+        <button id="stop-button">サーバー停止</button>
     </main>
 
     <script>
         const socket = io.connect('http://127.0.0.1:5000');
 
-        // WebSocket接続の成功時にメッセージを表示
-        socket.on('connect', function () {
-            console.log('WebSocket 接続成功');
-        });
-
-        // 新しい単語リストを受信したら既存のリストに追加
-        socket.on('new_text', function (words) {
-            console.log('新しい単語:', words);  // デバッグ用
-            const list = document.getElementById('text-list');
-
-            // 現在のスクロール位置を保存
-            const atTop = list.scrollTop === 0;
-
-            words.forEach(word => {
-                const listItem = document.createElement('li');
-                listItem.textContent = word;
-
-                // クリック時にWikipediaを表示
-                listItem.addEventListener('click', function () {
-                    // 既に検索結果が表示されていたら隠す
-                    let existingResult = listItem.querySelector('.search-result');
-                    if (existingResult) {
-                        existingResult.style.display = existingResult.style.display === 'none' ? 'block' : 'none';
-                    } else {
-                        // 新しい検索結果を追加
-                        const searchResult = document.createElement('div');
-                        searchResult.classList.add('search-result');
-                        searchResult.innerHTML = `<iframe src="https://ja.wikipedia.org/wiki/${encodeURIComponent(word)}"></iframe>`;
-                        listItem.appendChild(searchResult);
-                        searchResult.style.display = 'block';
-                    }
-                });
-
-                // リストの最上部に追加
-                list.insertBefore(listItem, list.firstChild);
-            });
-
-            // スクロール位置を調整
-            if (atTop) {
-                list.scrollTop = 0;
-            }
-        });
-
-        // 停止ボタンの動作
+        // サーバー停止ボタンの動作
         document.getElementById('stop-button').addEventListener('click', function () {
             fetch('/stop', {
                 method: 'POST'
             })
-            .then(response => response.json())
-            .then(data => {
-                alert("音声認識を停止しました。");
+            .then(response => {
+                if (response.ok) {
+                    alert("サーバーが停止されました。");
+                } else {
+                    alert("サーバー停止に失敗しました。");
+                }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert("サーバーが停止しました。");
+                alert("サーバー停止に失敗しました。");
+            });
+        });
+
+        // 新しい認識結果を受信
+        socket.on('new_text', function (words) {
+            const list = document.getElementById('text-list');
+            words.forEach(word => {
+                const listItem = document.createElement('li');
+                listItem.textContent = word;
+                list.appendChild(listItem);
             });
         });
     </script>
