@@ -27,6 +27,23 @@ recognition_failed = False
 def print_error_message():
     global recognition_failed
 
+# ブックマークを保存するリスト
+bookmarks = []
+
+# ブックマーク追加
+@app.route('/bookmark', methods=['POST'])
+def add_bookmark():
+    data = request.json # type: ignore
+    word = data.get('word', None)
+    if word and word not in bookmarks:
+        bookmarks.append(word)
+    return jsonify({"status": "success", "bookmarks": bookmarks})
+
+# ブックマーク取得
+@app.route('/bookmarks', methods=['GET'])
+def get_bookmarks():
+    return jsonify({"bookmarks": bookmarks})
+
 # コールバック関数
 def audio_callback(indata, frames, time, status):
     if status:
